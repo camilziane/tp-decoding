@@ -1,7 +1,8 @@
 from shutil import unpack_archive
 import os
 from os.path import join, isfile
-import wget
+import ssl
+from urllib.request import urlopen
 
 
 COMP_LINK = 'https://www.bbci.de/competition/download/competition_iv/BCICIV_4_mat.zip'
@@ -30,14 +31,14 @@ def download_bciciv(target_folder):
 
 
 def download(url, out=None, unsafe=False):
-    """ wget wrapper with some safety net
+    """Download a file with some safety net.
 
         WARNING: if out exists, it will be removed !!
     """
     try:
         if isfile(out):
-            remove(out)
-        wget.download(url, out=out)
+            os.remove(out)
+        _download(url, out, verify=not unsafe)
 
     except KeyboardInterrupt:
         import sys
@@ -45,11 +46,22 @@ def download(url, out=None, unsafe=False):
         print("Aborting...")
         sys.exit()
 
-    except:
+    except Exception:
         if not unsafe:
             raise
 
         # download even if certificate is invalid
-        import ssl
-        ssl._create_default_https_context = ssl._create_unverified_context
-        wget.download(url, out=out)
+        _download(url, out, verify=False)
+
+
+def _download(url, out, verify=True):
+    context = None
+    if not verify:
+        context = ssl._create_unverified_context()
+
+    with urlopen(url, context=context) as response, open(out, 'wb') as f:
+        while True:
+            chunk = response.read(1024 * 1024)
+            if not chunk:
+                break
+            f.write(chunk)
