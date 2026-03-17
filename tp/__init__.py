@@ -2,8 +2,10 @@ import os
 
 from . import data
 from . import downloader
+from .dnn import *
+from .plot import *
+from .preprocess import *
 from .utils import * # make all utils directly accesible by calling tp.<utils-func>
-from .plots import *
 
 
 
