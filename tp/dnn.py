@@ -53,7 +53,7 @@ def make_optimizer(model, optimizer_name="adamw", lr=2e-4, weight_decay=1e-3):
     raise ValueError(f"Unknown optimizer: {optimizer_name}")
 
 
-def plot_dnn_learning_curves(model_name, history):
+def plot_dnn_learning_curves(model_name, history, figsize=(50, 20)):
     epochs = np.arange(1, len(history["train_loss"]) + 1)
     loss_values = np.asarray(history["train_loss"] + history["val_loss"], dtype=float)
     f1_values = np.asarray(history["val_macro_f1"], dtype=float)
@@ -67,7 +67,7 @@ def plot_dnn_learning_curves(model_name, history):
     if f1_y_max <= f1_y_min:
         f1_y_max = min(1.0, f1_y_min + 0.06)
 
-    fig, axes = plt.subplots(1, 2, figsize=(50, 20), constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=figsize, constrained_layout=True)
 
     axes[0].plot(epochs, history["train_loss"], marker="o", label="Train loss")
     axes[0].plot(epochs, history["val_loss"], marker="o", label="Validation loss")
@@ -265,6 +265,7 @@ def train_and_record(
     checkpoint_metric="bal_acc",
     store_results=True,
     show_learning_curves=True,
+    learning_curve_figsize=(50, 20),
     return_probabilities=False,
 ):
     print("\n" + "=" * 90)
@@ -346,6 +347,6 @@ def train_and_record(
     )
 
     if show_learning_curves:
-        plot_dnn_learning_curves(model_name, history)
+        plot_dnn_learning_curves(model_name, history, figsize=learning_curve_figsize)
 
     return result
