@@ -51,3 +51,8 @@ uv run jupyter lab
 ```
 
 Then open `notebook.ipynb`.
+
+## Contributors
+
+- Camil Ziane
+- Codex
